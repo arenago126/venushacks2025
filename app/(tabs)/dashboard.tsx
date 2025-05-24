@@ -8,9 +8,8 @@ import { TextInput } from 'react-native-gesture-handler';
 import Svg, { Circle, G } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
-const TOTAL_DUE = 1000; // Example total due for calculation
-const TOTAL_BALANCE = 4570.8;
-const SAVINGS = 2482;
+const TOTAL_DUE = 500; // Example total due for calculation
+const TOTAL_DEBT = 50000;
 const DUE_COLOR = '#354024';
 const OTHER_COLOR = '#4c3d19';
 const BG_COLOR = '#E5D7C4';
@@ -30,8 +29,11 @@ export default function DashboardScreen() {
   const [dueDate, setDueDate] = useState<string | null>(null);
 
   const handleSubmit = () => {
-    setAmount(input);
-    setInput('');
+    const payment = parseFloat(input) || 0;
+    if (payment < 0) {
+      setAmount(prev => (parseFloat(prev) + payment).toString());
+      setInput('');
+    }
   };
 
   const handleChartPress = () => setShowModal(true);
@@ -49,12 +51,11 @@ export default function DashboardScreen() {
   };
 
   const paid = parseFloat(amount) || 0;
-  const percentPaid = Math.min(paid / TOTAL_DUE, 1);
+  const percentPaid = Math.min(paid / TOTAL_DEBT, 1);
   const leftToPay = Math.max(TOTAL_DUE - paid, 0);
 
   // Chart math
-  const savingsPercent = SAVINGS / TOTAL_BALANCE;
-  const otherPercent = 1 - savingsPercent;
+  const savingsPercent = TOTAL_DUE / TOTAL_DEBT;
 
   // Chart dimensions
   const size = 180;
@@ -63,8 +64,20 @@ export default function DashboardScreen() {
   const circumference = 2 * Math.PI * radius;
 
   // Arc calculations
-  const savingsArc = circumference * savingsPercent;
-  const otherArc = circumference * otherPercent;
+  const paidArcLength = circumference * percentPaid;
+  const remainingArcLength = circumference - paidArcLength;
+
+  // Status message based on payment
+  let statusMessage = '';
+  if (paid > TOTAL_DUE) {
+    statusMessage = `You have overpaid by $${(paid - TOTAL_DUE).toFixed(2)}.`;
+  } else if (paid === TOTAL_DUE) {
+    statusMessage = 'You have paid the full amount due.';
+  } else if (paid < TOTAL_DUE && paid > 0) {
+    statusMessage = `You still need to pay $${leftToPay.toFixed(2)}.`;
+  } else {
+    statusMessage = 'Please enter an amount to see your payment status.';
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG_COLOR }} contentContainerStyle={{ padding: 20 }}>
@@ -81,7 +94,15 @@ export default function DashboardScreen() {
           textAlign="center"
           value={amount}
           onChangeText={setAmount}
+          onSubmitEditing={handleSubmit}
+          returnKeyType="done"
         />
+        <ThemedText style={styles.label}>
+          {paid >= TOTAL_DUE ? 'Payment Complete!' : `Remaining $${(TOTAL_DUE - paid).toFixed(2)}`}
+        </ThemedText>
+        {statusMessage !== '' && (
+          <ThemedText style={styles.label}>{statusMessage}</ThemedText>
+        )}
       </View>
 
       {/* Calendar Box */}
@@ -118,7 +139,7 @@ export default function DashboardScreen() {
                   todayTextColor: '#354024',
                   dayTextColor: '#354024',
                   textDisabledColor: '#354024',
-                  arrowColor: '#889063',
+                  arrowColor: '#354024',
                   monthTextColor: '#354024',
                   indicatorColor: '#5B5BF6',
                   textDayFontWeight: 'bold',
@@ -143,7 +164,7 @@ export default function DashboardScreen() {
         activeOpacity={0.8}
       >
         <View style={styles.chartHeader}>
-          <ThemedText style={styles.chartLabel}>Current Balance</ThemedText>
+          <ThemedText style={styles.chartLabel}>Progress</ThemedText>
           <View style={styles.monthBox}><ThemedText style={styles.monthText}>Month ▼</ThemedText></View>
         </View>
         <View style={styles.chartSvgContainer}>
@@ -156,7 +177,7 @@ export default function DashboardScreen() {
                 r={radius}
                 stroke={OTHER_COLOR}
                 strokeWidth={strokeWidth}
-                strokeDasharray={`${otherArc},${circumference}`}
+                strokeDasharray={`${remainingArcLength},${circumference}`}
                 strokeLinecap="round"
                 fill="none"
               />
@@ -167,16 +188,16 @@ export default function DashboardScreen() {
                 r={radius}
                 stroke={DUE_COLOR}
                 strokeWidth={strokeWidth}
-                strokeDasharray={`${savingsArc},${circumference}`}
-                strokeDashoffset={-otherArc}
+                strokeDasharray={`${paidArcLength},${circumference}`}
+                strokeDashoffset={-remainingArcLength}
                 strokeLinecap="round"
                 fill="none"
               />
             </G>
           </Svg>
           <View style={styles.chartCenter} pointerEvents="none">
-            <ThemedText style={styles.chartBalance}>${SAVINGS.toLocaleString()}</ThemedText>
-            <ThemedText style={styles.chartSub}>% paid</ThemedText>
+            <ThemedText style={styles.chartBalance}>${paid.toFixed()}</ThemedText>
+            <ThemedText style={styles.chartSub}>{(percentPaid * 100).toFixed(0)}%</ThemedText>
           </View>
         </View>
       </TouchableOpacity>
@@ -184,9 +205,8 @@ export default function DashboardScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <ThemedText style={styles.modalTitle}>Balance Details</ThemedText>
-            <ThemedText style={styles.modalText}>Current Balance: ${TOTAL_BALANCE.toLocaleString()}</ThemedText>
-            <ThemedText style={styles.modalText}>Your Savings: ${SAVINGS.toLocaleString()}</ThemedText>
-            <ThemedText style={styles.modalText}>Other: ${(TOTAL_BALANCE - SAVINGS).toLocaleString()}</ThemedText>
+            <ThemedText style={styles.modalText}>Debt: ${TOTAL_DEBT.toLocaleString()}</ThemedText>
+            <ThemedText style={styles.modalText}>Remaining Amount: ${(TOTAL_DEBT- TOTAL_DUE).toLocaleString()}</ThemedText>
             <Button title="Close" onPress={handleCloseModal} color='#889063' />
           </View>
         </View>
@@ -202,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 28,
     color: '#354024',
   },
   card: {
@@ -214,7 +234,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#E5D7C4',
-    fontSize: 15,
+    fontSize: 20,
     marginBottom: 4,
     alignItems: 'center',
     justifyContent: 'center',
