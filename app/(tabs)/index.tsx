@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, StyleSheet, TextInput } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -7,6 +8,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
+  const [userInput, setUserInput] = useState('');
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,6 +21,16 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+      <ThemedText type="subtitle">Enter Your Name</ThemedText>
+      <TextInput
+        style={styles.input}
+        placeholder="Type here..."
+        value={userInput}
+        onChangeText={text => setUserInput(text)}
+      />
+      <ThemedText type="default">You typed: {userInput}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -65,6 +77,14 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+  },
   reactLogo: {
     height: 178,
     width: 290,
@@ -72,4 +92,5 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+
 });
