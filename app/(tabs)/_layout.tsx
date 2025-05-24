@@ -21,16 +21,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="chatbot"
+          name="my finances"
           options={{
-            title: 'Chatbot',
-            tabBarIcon: ({ color }) => <MaterialIcons name="chat" size={24} color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
+            title: 'my finances',
             tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
           }}
         />
