@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Platform, StyleSheet, TextInput } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';

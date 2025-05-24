@@ -25,6 +25,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <MaterialIcons name="chat" size={24} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
