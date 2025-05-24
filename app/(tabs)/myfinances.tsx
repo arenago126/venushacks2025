@@ -148,12 +148,12 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#E5D7C4",
+    padding: 20
   },
   uploadContainer: {
     marginTop: -10,
     alignItems: "center",
   },
-
   uploadBox: {
     backgroundColor: "#E5D7C4",
     padding: 100,
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     width: "90%",
     backgroundColor: "#ffffff",
     borderRadius: 12,
-    padding: 16,
-    marginTop: 20,
+    padding: 20,
+    marginTop: 25,
   },
   message: {
     padding: 10,
@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#CCC",
+    borderWidth: 2,
+    borderColor: "#354024",
     paddingHorizontal: 15,
     backgroundColor: "#FFF",
   },
