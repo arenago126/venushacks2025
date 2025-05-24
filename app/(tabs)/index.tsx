@@ -443,44 +443,6 @@ const styles = StyleSheet.create({
   },
   chartCenter: {
     position: 'absolute',
-    top: 70,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    pointerEvents: 'none',
   },
-  chartBalance: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#354024',
-    backgroundColor: '#889063',
-  },
-  chartSub: {
-    color: '#354024',
-    fontSize: 15,
-    marginTop: 2,
-  },
-  calendarLabel: {
-    color: '#354024',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  calendarDate: {
-    color: '#354024',
-    fontSize: 25,
-    fontWeight: 'bold',
-  },
-  calendarModalContent: {
-    backgroundColor: '#E5D7C4',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    width: 320,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-  },
+
 });
