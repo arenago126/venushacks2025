@@ -2,10 +2,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { StyleSheet } from 'react-native';
 
-export default function CalculatorScreen() {
+export default function ChatbotScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Calculator</ThemedText>
+      <ThemedText type="title">Chatbot</ThemedText>
     </ThemedView>
   );
 }
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}); 
