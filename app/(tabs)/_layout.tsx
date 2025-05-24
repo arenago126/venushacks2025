@@ -14,6 +14,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+<<<<<<< HEAD
           name="calculator"
           options={{
             title: 'Calculator',
@@ -25,6 +26,12 @@ export default function TabLayout() {
           options={{
             title: 'my finances',
             tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
+=======
+          name="chatbot"
+          options={{
+            title: 'Chatbot',
+            tabBarIcon: ({ color }) => <MaterialIcons name="chat" size={24} color={color} />,
+>>>>>>> arena
           }}
         />
       </Tabs>
