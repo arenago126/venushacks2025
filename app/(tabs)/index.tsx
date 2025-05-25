@@ -23,7 +23,7 @@ export default function DashboardScreen() {
     toNumber(scholarships) -
     toNumber(grants);
 
-  const annualInterestRate = 0.05;
+  const annualInterestRate = 0.0653;
   const monthlyInterestRate = annualInterestRate / 12;
 
   const loanTermMonths = 10 * 12; // 10 years in months
