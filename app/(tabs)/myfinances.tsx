@@ -47,6 +47,8 @@ function FinanceInputs() {
   const [scholarships, setScholarships] = useState("");
   const [grants, setGrants] = useState("");
   const [loans, setLoans] = useState("");
+  const [income, setIncome] = useState("");
+  const [expenses, setExpenses] = useState("");
 
   return (
     <View style={styles.financeContainer}>
@@ -92,6 +94,36 @@ function FinanceInputs() {
         />
         {loans ? (
           <Text style={styles.displayAmount}>Amount: ${loans}</Text>
+        ) : null}
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Annual Income</Text>
+        <TextInput
+          style={styles.financeInput}
+          value={income}
+          onChangeText={setIncome}
+          placeholder="Enter annual income"
+          keyboardType="numeric"
+          placeholderTextColor="#889063"
+        />
+        {income ? (
+          <Text style={styles.displayAmount}>Amount: ${income}</Text>
+        ) : null}
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Annual Expenses</Text>
+        <TextInput
+          style={styles.financeInput}
+          value={income}
+          onChangeText={setExpenses}
+          placeholder="Enter annual expenses"
+          keyboardType="numeric"
+          placeholderTextColor="#889063"
+        />
+        {income ? (
+          <Text style={styles.displayAmount}>Amount: ${expenses}</Text>
         ) : null}
       </View>
     </View>
