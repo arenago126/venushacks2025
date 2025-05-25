@@ -13,16 +13,60 @@ import {
 
 function FileUploadWidget() {
   const [fileName, setFileName] = useState("");
-
   const pickFile = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "application/pdf",
-      copyToCacheDirectory: true,
-    });
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true, // Changed to true to ensure file is accessible
+      });
 
-    if (!result.canceled) {
-      setFileName(result.assets[0].name);
-      console.log("File URI:", result.assets[0].uri);
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        console.log("Document picking was canceled or no assets were returned");
+        return;
+      }
+    
+
+      const file = result.assets[0];
+      console.log("Selected file:", file);
+
+      const formData = new FormData();
+      // formData.append("file", {
+      //   uri: file.uri,
+      //   name: file.name ?? "Boo.pdf",
+      //   type: file.mimeType ?? "application/pdf",
+      // } as any);
+      const fileToUpload = file.file as File;
+
+      let fileName: string;
+      fileName = file.name;
+
+      formData.append("file", fileToUpload, fileName);
+
+
+      console.log("FormData prepared:", formData);
+      const request = await fetch("http://localhost:8000/extract-ai", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Accept": "application/pdf",
+        },
+      });
+
+      if (!request.ok) {
+        const errorText = await request.text();
+        console.error("Error response:", {
+          status: request.status,
+          statusText: request.statusText,
+          body: errorText
+        });
+        throw new Error(`HTTP error! status: ${request.status}, body: ${errorText}`);
+      }
+
+      const json = await request.json();
+      console.log("Response:", json);
+      setFileName(file.name);
+    } catch (error) {
+      console.error("Error in pickFile:", error);
     }
   };
 
