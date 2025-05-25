@@ -11,7 +11,11 @@ export default function CalculatorScreen() {
 
   const totalAid = toNumber(scholarships) + toNumber(grants);
   const netIncome = toNumber(income) - toNumber(expenses);
-  const unmetNeed = toNumber(costOfAttendance) - toNumber(giftAid);
+  const unmetNeed =
+    toNumber(costOfAttendance) -
+    toNumber(giftAid) -
+    toNumber(scholarships) -
+    toNumber(grants);
 
   const summaryItems = [
     { label: "Scholarships", value: scholarships },
