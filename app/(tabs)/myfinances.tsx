@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import * as DocumentPicker from "expo-document-picker";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ScrollView,
@@ -11,7 +12,49 @@ import {
   View,
 } from "react-native";
 
-function FileUploadWidget() {
+type FinanceInputsProps = {
+  scholarships: string;
+  setScholarships: (value: string) => void;
+  grants: string;
+  setGrants: (value: string) => void;
+  income: string;
+  setIncome: (value: string) => void;
+  expenses: string;
+  setExpenses: (value: string) => void;
+};
+
+type FileUploadWidgetProps = {
+  setCostOfAttendance: (value: string) => void;
+  setGiftAid: (value: string) => void;
+};
+
+// function FileUploadWidget({
+//   setCostOfAttendance,
+//   setGiftAid,
+// }: FileUploadWidgetProps) {
+//   const [fileName, setFileName] = useState("");
+
+//   const pickFile = async () => {
+//     const result = await DocumentPicker.getDocumentAsync({
+//       type: "application/pdf",
+//       copyToCacheDirectory: true,
+//     });
+
+//     if (!result.canceled) {
+//       const fileUri = result.assets[0].uri;
+//       setFileName(result.assets[0].name);
+//       console.log("File URI:", fileUri);
+
+//       // Simulate parsing results (replace with real backend call later)
+//       setCostOfAttendance("45000");
+//       setGiftAid("25000");
+//     }
+//   };
+
+function FileUploadWidget({
+  setCostOfAttendance,
+  setGiftAid,
+}: FileUploadWidgetProps) {
   const [fileName, setFileName] = useState("");
   const pickFile = async () => {
     try {
@@ -24,7 +67,6 @@ function FileUploadWidget() {
         console.log("Document picking was canceled or no assets were returned");
         return;
       }
-    
 
       const file = result.assets[0];
       console.log("Selected file:", file);
@@ -44,11 +86,13 @@ function FileUploadWidget() {
 
       console.log("FormData prepared:", formData);
 
+
       const request = await fetch("http://localhost:8000/extract-ai", {
         method: "POST",
         body: formData,
         headers: {
           "Accept": "application/json",
+          Accept: "application/json",
         },
       });
 
@@ -61,13 +105,17 @@ function FileUploadWidget() {
         console.error("Error response:", {
           status: request.status,
           statusText: request.statusText,
-          body: errorText
+          body: errorText,
         });
-        throw new Error(`HTTP error! status: ${request.status}, body: ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${request.status}, body: ${errorText}`
+        );
       }
 
       const json = await request.json();
       console.log("Response:", json);
+      setCostOfAttendance(json.costOfAttendance ?? "0");
+      setGiftAid(json.giftAid ?? "0");
       setFileName(file.name);
     } catch (error) {
       console.error("Error in pickFile:", error);
@@ -91,13 +139,16 @@ function FileUploadWidget() {
   );
 }
 
-function FinanceInputs() {
-  const [scholarships, setScholarships] = useState("");
-  const [grants, setGrants] = useState("");
-  const [loans, setLoans] = useState("");
-  const [income, setIncome] = useState("");
-  const [expenses, setExpenses] = useState("");
-
+function FinanceInputs({
+  scholarships,
+  setScholarships,
+  grants,
+  setGrants,
+  income,
+  setIncome,
+  expenses,
+  setExpenses,
+}: FinanceInputsProps) {
   return (
     <View style={styles.financeContainer}>
       <View style={styles.inputGroup}>
@@ -174,11 +225,41 @@ function FinanceInputs() {
           <Text style={styles.displayAmount}>Amount: ${expenses}</Text>
         ) : null}
       </View>
+      {/* Repeat this pattern for each field */}
+      {[
+        { label: "Scholarships", value: scholarships, set: setScholarships },
+        { label: "Grants", value: grants, set: setGrants },
+        { label: "Annual Income", value: income, set: setIncome },
+        { label: "Annual Expenses", value: expenses, set: setExpenses },
+      ].map(({ label, value, set }) => (
+        <View style={styles.inputGroup} key={label}>
+          <Text style={styles.inputLabel}>{label}</Text>
+          <TextInput
+            style={styles.financeInput}
+            value={value}
+            onChangeText={set}
+            placeholder={`Enter ${label.toLowerCase()}`}
+            keyboardType="numeric"
+            placeholderTextColor="#889063"
+          />
+          {value ? (
+            <Text style={styles.displayAmount}>Amount: ${value}</Text>
+          ) : null}
+        </View>
+      ))}
     </View>
   );
 }
 
-export default function CalculatorScreen() {
+export default function MyFinancesScreen() {
+  const [scholarships, setScholarships] = useState("");
+  const [grants, setGrants] = useState("");
+  const [income, setIncome] = useState("");
+  const [expenses, setExpenses] = useState("");
+  const [costOfAttendance, setCostOfAttendance] = useState("");
+  const [giftAid, setGiftAid] = useState("");
+  const router = useRouter();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
@@ -191,23 +272,53 @@ export default function CalculatorScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <FileUploadWidget />
-        <FinanceInputs />
+        <FileUploadWidget
+          setCostOfAttendance={setCostOfAttendance}
+          setGiftAid={setGiftAid}
+        />
+        <FinanceInputs
+          scholarships={scholarships}
+          setScholarships={setScholarships}
+          grants={grants}
+          setGrants={setGrants}
+          income={income}
+          setIncome={setIncome}
+          expenses={expenses}
+          setExpenses={setExpenses}
+        />
+
+        <TouchableOpacity
+          style={[styles.customButton, { marginTop: 30 }]}
+          onPress={() =>
+            router.push({
+              pathname: "/calculator",
+              params: {
+                scholarships,
+                grants,
+                income,
+                expenses,
+                costOfAttendance,
+                giftAid,
+              },
+            })
+          }
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>
+            Go to Calculator
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  // Same styles you already have
   container: {
     flex: 1,
     paddingTop: 60,
     alignItems: "center",
     backgroundColor: "#E5D7C4",
-  },
-  messagesContainer: {
-    padding: 16,
-    paddingBottom: 80,
   },
   header: {
     backgroundColor: "#889063",
@@ -218,40 +329,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  title: {
-    color: "#E5D7C4",
-  },
-  uploadContainer: {
-    marginTop: -10,
-    alignItems: "center",
-  },
+  title: { color: "#E5D7C4" },
+  scrollView: { flex: 1, width: "100%" },
+  scrollContent: { alignItems: "center", paddingBottom: 50 },
+  uploadContainer: { marginTop: -10, alignItems: "center" },
   uploadBox: {
     backgroundColor: "#E5D7C4",
     padding: 100,
     borderRadius: 50,
-    shadowColor: "#000",
-    shadowOpacity: 0.0,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 6,
     elevation: 5,
     width: "200%",
     alignItems: "center",
-  },
-  fileName: {
-    marginTop: 12,
-    fontSize: 14,
-  },
-  customButton: {
-    backgroundColor: "#889063",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  customButtonText: {
-    color: "#889063",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   textButtonBox: {
     borderWidth: 2,
@@ -263,20 +351,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: -70,
   },
-  textButton: {
-    fontSize: 18,
-    color: "#889063",
-    fontWeight: "bold",
-  },
-  // New styles for finance inputs
-  financeContainer: {
-    width: "90%",
-    marginTop: 20,
-    gap: 15,
-  },
-  inputGroup: {
+  textButton: { fontSize: 18, color: "#889063", fontWeight: "bold" },
+  fileName: { marginTop: 12, fontSize: 14 },
+  customButton: {
+    backgroundColor: "#889063",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
     alignItems: "center",
   },
+  financeContainer: { width: "90%", marginTop: 20, gap: 15 },
+  inputGroup: { alignItems: "center" },
   inputLabel: {
     fontSize: 16,
     fontWeight: "bold",
@@ -300,71 +385,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#889063",
     fontWeight: "bold",
-  },
-  chatContainer: {
-    flex: 1,
-    width: "90%",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 20,
-  },
-  message: {
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-    maxWidth: "80%",
-    backgroundColor: "#f1f1f1",
-  },
-  user: {
-    alignSelf: "flex-end",
-    backgroundColor: "#DCF8C6",
-  },
-  bot: {
-    alignSelf: "flex-start",
-    backgroundColor: "#E5E5EA",
-  },
-  messageText: {
-    fontSize: 16,
-  },
-  textInput: {
-    flex: 1,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    paddingHorizontal: 15,
-    backgroundColor: "#FFF",
-  },
-  sendButton: {
-    marginLeft: 8,
-    backgroundColor: "#889063",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    justifyContent: "center",
-  },
-  sendButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  inputBarFixed: {
-    flexDirection: "row",
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  scrollView: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    alignItems: "center",
-    paddingBottom: 50,
   },
 });
