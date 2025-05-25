@@ -92,7 +92,6 @@ function FileUploadWidget({
         body: formData,
         headers: {
           "Accept": "application/json",
-          Accept: "application/json",
         },
       });
 
@@ -178,21 +177,6 @@ function FinanceInputs({
         />
         {grants ? (
           <Text style={styles.displayAmount}>Amount: ${grants}</Text>
-        ) : null}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Loans</Text>
-        <TextInput
-          style={styles.financeInput}
-          value={loans}
-          onChangeText={setLoans}
-          placeholder="Enter loan amount"
-          keyboardType="numeric"
-          placeholderTextColor="#889063"
-        />
-        {loans ? (
-          <Text style={styles.displayAmount}>Amount: ${loans}</Text>
         ) : null}
       </View>
 
