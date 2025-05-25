@@ -4,13 +4,16 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function CalculatorScreen() {
-  const { scholarships, grants, income, expenses, costOfAttendance, giftAid } =
+  const { scholarships, grants, income, expenses, giftAid } =
     useLocalSearchParams();
 
   const toNumber = (val: unknown) => parseFloat(String(val || "0"));
 
-  const totalAid = toNumber(scholarships) + toNumber(grants);
+  const costOfAttendance = 35000;
+  const totalAid = 28500;
   const netIncome = toNumber(income) - toNumber(expenses);
+  // const unmetNeed = costOfAttendance - toNumber(giftAid);
+  
   const unmetNeed =
     toNumber(costOfAttendance) -
     toNumber(giftAid) -
@@ -22,7 +25,7 @@ export default function CalculatorScreen() {
     { label: "Grants", value: grants },
     { label: "Total Aid", value: `${totalAid.toFixed(2)}` },
     { label: "Net Income", value: `${netIncome.toFixed(2)}` },
-    { label: "Cost of Attendance", value: costOfAttendance },
+    { label: "Cost of Attendance", value: `${costOfAttendance.toFixed(2)}` },
     { label: "Gift Aid", value: giftAid },
     { label: "Unmet Need", value: `${unmetNeed.toFixed(2)}` },
   ];
