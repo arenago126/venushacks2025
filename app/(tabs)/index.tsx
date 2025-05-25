@@ -5,16 +5,11 @@ import React, { useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
-const TOTAL_DUE = 500; // Example total due for calculation
+const TOTAL_DUE = 500;
 const TOTAL_DEBT = 50000;
 const DUE_COLOR = "#354024";
 const OTHER_COLOR = "#4c3d19";
 const BG_COLOR = "#E5D7C4";
-
-const CalendarBox = () => {
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [paymentDate, setPaymentDate] = useState<Date | null>(null);
-};
 
 export default function DashboardScreen() {
   const { scholarships, grants, income, expenses, costOfAttendance, giftAid } =
@@ -22,11 +17,13 @@ export default function DashboardScreen() {
 
   const toNumber = (val: unknown) => parseFloat(String(val || "0"));
 
-  // Calculate unmet need = costOfAttendance - giftAid
-  const unmetNeed = toNumber(costOfAttendance) - toNumber(giftAid);
+  const unmetNeed =
+    toNumber(costOfAttendance) -
+    toNumber(giftAid) -
+    toNumber(scholarships) -
+    toNumber(grants);
 
-  // Assume fixed interest rate for loans
-  const annualInterestRate = 0.05; // 5% annual interest (example)
+  const annualInterestRate = 0.05;
   const monthlyInterestRate = annualInterestRate / 12;
 
   const loanTermMonths = 10 * 12; // 10 years in months
@@ -125,19 +122,45 @@ export default function DashboardScreen() {
         <ThemedText style={styles.sectionTitle}>
           10-Year Loan Payoff Plan
         </ThemedText>
-        <ThemedText>
-          Unmet Need (Loan Principal): ${principal.toFixed(2)}
-        </ThemedText>
-        <ThemedText>
-          Fixed Interest Rate: {(annualInterestRate * 100).toFixed(2)}% APR
-        </ThemedText>
-        <ThemedText>Monthly Payment: ${monthlyPayment.toFixed(2)}</ThemedText>
-        <ThemedText>
-          Monthly Net Income (Income - Expenses): ${netIncome.toFixed(2)}
-        </ThemedText>
-        <ThemedText>
-          Payment is {paymentPercentIncome.toFixed(1)}% of your net income.
-        </ThemedText>
+
+        <View style={styles.infoCard}>
+          <ThemedText style={styles.cardLabel}>
+            Unmet Need (Loan Principal)
+          </ThemedText>
+          <ThemedText style={styles.cardValue}>
+            ${principal.toFixed(2)}
+          </ThemedText>
+        </View>
+
+        <View style={styles.infoCard}>
+          <ThemedText style={styles.cardLabel}>Fixed Interest Rate</ThemedText>
+          <ThemedText style={styles.cardValue}>
+            {(annualInterestRate * 100).toFixed(2)}% APR
+          </ThemedText>
+        </View>
+
+        <View style={styles.infoCard}>
+          <ThemedText style={styles.cardLabel}>Monthly Payment</ThemedText>
+          <ThemedText style={styles.cardValue}>
+            ${monthlyPayment.toFixed(2)}
+          </ThemedText>
+        </View>
+
+        <View style={styles.infoCard}>
+          <ThemedText style={styles.cardLabel}>Net Monthly Income</ThemedText>
+          <ThemedText style={styles.cardValue}>
+            ${netIncome.toFixed(2)}
+          </ThemedText>
+        </View>
+
+        <View style={styles.infoCard}>
+          <ThemedText style={styles.cardLabel}>
+            Payment as % of Net Income
+          </ThemedText>
+          <ThemedText style={styles.cardValue}>
+            {paymentPercentIncome.toFixed(1)}%
+          </ThemedText>
+        </View>
       </View>
     </ScrollView>
   );
@@ -160,212 +183,34 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 24,
   },
-  label: {
-    color: "#E5D7C4",
-    fontSize: 20,
-    marginBottom: 4,
-    alignItems: "center",
-    justifyContent: "center",
-    alignContent: "center",
-    textAlign: "center",
-  },
-  balance: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#E5D7C4",
-    lineHeight: 40,
-    marginBottom: 8,
-    alignContent: "center",
-    textAlign: "center",
-  },
-  section: {
-    marginBottom: 24,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 12,
     color: "#354024",
   },
-  row: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  paymentCard: {
-    flex: 1,
+  infoCard: {
+    backgroundColor: "#E5D7C4",
     borderRadius: 12,
     padding: 16,
-    marginRight: 8,
-  },
-  paymentTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 4,
-    lineHeight: 22,
-  },
-  paymentAmount: {
-    color: "#E5D7C4",
-    marginBottom: 2,
-  },
-  paymentDue: {
-    color: "#E5D7C4",
-    fontSize: 12,
-  },
-  transactionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  transactionName: {
-    color: "#3B3B54",
-  },
-  transactionAmountNeg: {
-    color: "#FF4D4F",
-    fontWeight: "bold",
-  },
-  box: {
-    backgroundColor: "#354024",
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 24,
-    alignItems: "center",
-  },
-  boxText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  input: {
-    backgroundColor: "#889063",
-    color: "#fff",
-    borderRadius: 8,
-    padding: 10,
-    width: "80%",
-    marginBottom: 12,
-    textAlign: "center",
-    fontSize: 18,
-  },
-  boxRow: {
-    flexDirection: "row",
-    backgroundColor: "#889063",
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  boxTextSmall: {
-    color: "#fff",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  boxChart: {
-    backgroundColor: "#354024",
-    borderRadius: 20,
-    padding: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-  },
-  chartCenterText: {
-    position: "absolute",
-    top: 70,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chartText: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 24,
-    alignItems: "center",
-    width: 280,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: "#354024",
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: "#354024",
-  },
-  chartBox: {
-    backgroundColor: "#889063",
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 28,
-    elevation: 2,
+    marginVertical: 8,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    alignItems: "center",
-    position: "relative",
-    justifyContent: "center",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  chartHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 8,
-  },
-  chartLabel: {
+
+  cardLabel: {
     color: "#354024",
-    fontSize: 15,
-    backgroundColor: "#889063",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
   },
-  monthBox: {
-    backgroundColor: "#889063",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-  },
-  monthText: {
-    color: "#354024",
-    fontSize: 14,
+
+  cardValue: {
+    color: "#4c3d19",
+    fontSize: 18,
     fontWeight: "bold",
-  },
-  chartSvgContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    flexDirection: "row",
-    color: "#354024",
-    backgroundColor: "#889063",
-  },
-  chartCenter: {
-    position: "absolute",
-    top: 70,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-  },
-  chartBalance: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#354024",
-    backgroundColor: "#889063",
-  },
-  chartSub: {
-    color: "#354024",
-    fontSize: 15,
-    marginTop: 2,
   },
 });
