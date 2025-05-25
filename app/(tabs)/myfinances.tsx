@@ -52,6 +52,10 @@ function FileUploadWidget() {
         },
       });
 
+      const response = await request.text();
+      console.log("Response text:", response);
+      console.log("Request sent to server:", request);
+
       if (!request.ok) {
         const errorText = await request.text();
         console.error("Error response:", {
