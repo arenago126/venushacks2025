@@ -35,20 +35,20 @@ function FileUploadWidget() {
       //   name: file.name ?? "Boo.pdf",
       //   type: file.mimeType ?? "application/pdf",
       // } as any);
-      const fileToUpload = file.file as File;
+      const fileToUpload = file.file as File; // important part of the code must keep
 
       let fileName: string;
       fileName = file.name;
 
       formData.append("file", fileToUpload, fileName);
 
-
       console.log("FormData prepared:", formData);
+
       const request = await fetch("http://localhost:8000/extract-ai", {
         method: "POST",
         body: formData,
         headers: {
-          "Accept": "application/pdf",
+          "Accept": "application/json",
         },
       });
 
@@ -160,13 +160,13 @@ function FinanceInputs() {
         <Text style={styles.inputLabel}>Annual Expenses</Text>
         <TextInput
           style={styles.financeInput}
-          value={income}
+          value={expenses}
           onChangeText={setExpenses}
           placeholder="Enter annual expenses"
           keyboardType="numeric"
           placeholderTextColor="#889063"
         />
-        {income ? (
+        {expenses ? (
           <Text style={styles.displayAmount}>Amount: ${expenses}</Text>
         ) : null}
       </View>
